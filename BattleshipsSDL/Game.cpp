@@ -1,4 +1,5 @@
 #include "Game.h"
+#include "Battleship.h"
 
 Game::Game()
 	:mWindow(nullptr), mRenderer(nullptr), mIsRunning(true)
@@ -6,22 +7,34 @@ Game::Game()
 
 bool Game::Initialize()
 {
-	int sdlResult = SDL_Init(SDL_INIT_VIDEO);
-	if (sdlResult != 0)
+	if (!InitializeSDL()) return false;
+	else InitializeBattleships();
+	return true;
+}
+
+bool Game::InitializeSDL()
+{
+	if (SDL_InitSubSystem(SDL_INIT_VIDEO) != 0)
 	{
-		SDL_Log("Unable to initialize SDL: %s", SDL_GetError());
+		SDL_Log("SDL initialization error: %s", SDL_GetError());
 		return false;
 	}
 
-	mWindow = SDL_CreateWindow("Battleships", 100, 100, 1024, 768, 0);
+	mWindow = SDL_CreateWindow("Battleships", 100, 100, mWindowWidth, mWindowHeight, 0);
 	mRenderer = SDL_CreateRenderer(mWindow, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
 
 	if (!mRenderer)
 	{
-		SDL_Log("Failed to create renderer: %s", SDL_GetError());
+		SDL_Log("Error creating renderer: %s", SDL_GetError());
 		return false;
 	}
 	return true;
+}
+
+void Game::InitializeBattleships()
+{
+	mShips[0] = &Battleship::Battleship(this, Battleship::PLAYER_ONE);
+	mShips[1] = &Battleship::Battleship(this, Battleship::PLAYER_TWO);
 }
 
 void Game::RunLoop()
@@ -29,7 +42,7 @@ void Game::RunLoop()
 	while (mIsRunning)
 	{
 		ProcessInput();
-		UpdateGame();
+		Update();
 		GenerateOutput();
 	}
 }
@@ -48,13 +61,15 @@ void Game::ProcessInput()
 	}
 
 	const Uint8* state = SDL_GetKeyboardState(NULL);
+
 	if (state[SDL_SCANCODE_ESCAPE])
 	{
 		mIsRunning = false;
 	}
+
 }
 
-void Game::UpdateGame()
+void Game::Update()
 {
 
 }

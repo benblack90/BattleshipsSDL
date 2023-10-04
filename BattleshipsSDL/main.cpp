@@ -1,6 +1,7 @@
 #pragma once
 #define SDL_MAIN_HANDLED
 #include "Game.h"
+#include "Vector2.h"
 
 int main()
 {
@@ -10,6 +11,8 @@ int main()
 	{
 		game.RunLoop();
 	}
+
+	
 	game.Shutdown();
 	return 0;
 }
