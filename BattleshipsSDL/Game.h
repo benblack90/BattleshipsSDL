@@ -11,8 +11,8 @@ public:
 	bool InitializeSDL();
 	void InitializeBattleships();
 
-	const int mWindowWidth = 1024;
-	const int mWindowHeight = 758;
+	static const int mWindowWidth = 1024;
+	static const int mWindowHeight = 758;
 
 private:
 	void ProcessInput();
@@ -22,5 +22,6 @@ private:
 	SDL_Window* mWindow;
 	SDL_Renderer* mRenderer;
 	bool mIsRunning;
-	class Battleship* mShips[];
+	Uint32 mTicks;
+	class Battleship* mShips[2];
 };

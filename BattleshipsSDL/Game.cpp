@@ -33,8 +33,10 @@ bool Game::InitializeSDL()
 
 void Game::InitializeBattleships()
 {
-	mShips[0] = &Battleship::Battleship(this, Battleship::PLAYER_ONE);
-	mShips[1] = &Battleship::Battleship(this, Battleship::PLAYER_TWO);
+	Battleship* ship1 = new Battleship(Battleship::PLAYER_ONE);
+	Battleship* ship2 = new Battleship(Battleship::PLAYER_TWO);
+	mShips[0] = ship1;
+	mShips[1] = ship2;
 }
 
 void Game::RunLoop()
@@ -67,17 +69,41 @@ void Game::ProcessInput()
 		mIsRunning = false;
 	}
 
+	for (Battleship* bp : mShips)
+	{
+		bp->ProcessKeyInput(state);
+	}
 }
 
 void Game::Update()
 {
+	while (!SDL_TICKS_PASSED(SDL_GetTicks64(), mTicks + 16));
 
+	float deltaTime = (SDL_GetTicks64() - mTicks) / 1000.0f;
+	if (deltaTime > 0.05f)
+	{
+		deltaTime = 0.05f;
+	}
+	mTicks = SDL_GetTicks64();
+
+	for (Battleship* bp : mShips)
+	{
+		bp->UpdateBattleship(deltaTime);
+	}
 }
 
 void Game::GenerateOutput()
 {
 	SDL_SetRenderDrawColor(mRenderer, 0, 0, 0, 255);
 	SDL_RenderClear(mRenderer);
+
+	SDL_SetRenderDrawColor(mRenderer, 255, 255, 255, 255);
+
+	for (Battleship* bp : mShips)
+	{
+		bp->draw(mRenderer);
+	}
+
 	SDL_RenderPresent(mRenderer);
 }
 
