@@ -84,6 +84,14 @@ void Battleship::ProcessP1Keys(const Uint8* state)
 	{
 		mRotation += 0.01f;
 	}
+	if (state[SDL_SCANCODE_Q])
+	{
+		FireLeft();
+	}
+	if (state[SDL_SCANCODE_E])
+	{
+		FireRight();
+	}
 }
 
 void Battleship::ProcessP2Keys(const Uint8* state)
@@ -108,6 +116,14 @@ void Battleship::ProcessP2Keys(const Uint8* state)
 	if (state[SDL_SCANCODE_L])
 	{
 		mRotation += 0.01f;
+	}
+	if (state[SDL_SCANCODE_U])
+	{
+		FireLeft();
+	}
+	if (state[SDL_SCANCODE_O])
+	{
+		FireRight();
 	}
 }
 

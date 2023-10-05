@@ -32,6 +32,8 @@ private:
 	void RotateBattleship();
 	void PositionHitboxes();
 	void WrapAroundPosition(Vector2 &loc);
+	void FireLeft();
+	void FireRight();
 	
 
 	Vector2 mHeading;
