@@ -1,16 +1,13 @@
 #pragma once
 #include "Vector2.h"
 #include <SDL.h>
+#include "Owner.h"
+#include "Shell.h"
+#include "HitBox.h"
 
 class Battleship
 {
 public:
-	enum Owner
-	{
-		PLAYER_ONE,
-		PLAYER_TWO
-	};
-
 	enum HIT_BOXES
 	{
 		BACK,
@@ -20,10 +17,12 @@ public:
 		HITBOX_MAX
 	};
 
-	Battleship(Owner owner);
+	Battleship(Owner::Owner owner);
 	void UpdateBattleship(float deltaTime);
 	void ProcessKeyInput(const Uint8* state);
-	void draw(SDL_Renderer* renderer);
+	void Draw(SDL_Renderer* renderer);
+	HitBox* GetHitboxes() { return mHitBoxes; }
+	inline void SetEnemyHitBoxes(HitBox* enemyHitBoxes) { mEnemyHitBoxes = enemyHitBoxes; }
 
 private:
 
@@ -32,8 +31,8 @@ private:
 	void RotateBattleship();
 	void PositionHitboxes();
 	void WrapAroundPosition(Vector2 &loc);
-	void FireLeft();
-	void FireRight();
+	void Fire(Vector2 direction);
+	void RemoveShell();
 	
 
 	Vector2 mHeading;
@@ -41,6 +40,9 @@ private:
 	float mSpeed;
 	const float mMAX_SPEED = 75.0f;
 	float mRotation;
-	Vector2 mHitBoxes[HITBOX_MAX];
-	Owner mOwner;
+	HitBox mHitBoxes[HITBOX_MAX];
+	Owner::Owner mOwner;
+	HitBox* mEnemyHitBoxes;
+	Shell* mShell;
+	float mLastFiredAt;
 };

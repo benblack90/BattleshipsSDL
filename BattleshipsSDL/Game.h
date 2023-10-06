@@ -1,5 +1,6 @@
 #pragma once
 #include <SDL.h>
+#include "Owner.h"
 
 class Game
 {
@@ -23,5 +24,5 @@ private:
 	SDL_Renderer* mRenderer;
 	bool mIsRunning;
 	Uint32 mTicks;
-	class Battleship* mShips[2];
+	class Battleship* mShips[Owner::PLAYER_MAX];
 };

@@ -33,10 +33,10 @@ bool Game::InitializeSDL()
 
 void Game::InitializeBattleships()
 {
-	Battleship* ship1 = new Battleship(Battleship::PLAYER_ONE);
-	Battleship* ship2 = new Battleship(Battleship::PLAYER_TWO);
-	mShips[0] = ship1;
-	mShips[1] = ship2;
+	Battleship* ship1 = new Battleship(Owner::PLAYER_ONE);
+	Battleship* ship2 = new Battleship(Owner::PLAYER_TWO);
+	mShips[Owner::PLAYER_ONE] = ship1;
+	mShips[Owner::PLAYER_TWO] = ship2;
 }
 
 void Game::RunLoop()
@@ -86,10 +86,13 @@ void Game::Update()
 	}
 	mTicks = SDL_GetTicks64();
 
-	for (Battleship* bp : mShips)
+
+	for (int i = 0; i < Owner::PLAYER_MAX; i++)
 	{
-		bp->UpdateBattleship(deltaTime);
-	}
+		int enemy = Owner::PLAYER_MAX - i - 1;
+		mShips[i]->UpdateBattleship(deltaTime);
+		mShips[i]->SetEnemyHitBoxes(mShips[enemy]->GetHitboxes());
+	}	
 }
 
 void Game::GenerateOutput()
@@ -101,7 +104,7 @@ void Game::GenerateOutput()
 
 	for (Battleship* bp : mShips)
 	{
-		bp->draw(mRenderer);
+		bp->Draw(mRenderer);
 	}
 
 	SDL_RenderPresent(mRenderer);

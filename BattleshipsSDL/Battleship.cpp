@@ -2,13 +2,17 @@
 #include "Battleship.h"
 #include "Game.h"
 
-Battleship::Battleship(Owner owner)
-	:mOwner{owner}, mRotation{0.0}, mSpeed {0.0f}
+Battleship::Battleship(Owner::Owner owner)
+	:mOwner{ owner }, mRotation{ 0.0 }, mSpeed{ 0.0f }
 {
-	mPosition = (owner == PLAYER_ONE) ? Vector2(60, Game::mWindowHeight/2) : Vector2(Game::mWindowWidth - 60, Game::mWindowHeight/2);
-	mHeading = (owner == PLAYER_ONE) ? Vector2(1, 0) : Vector2(-1, 0);
-	PositionHitboxes();
-	
+	mPosition = (owner == Owner::PLAYER_ONE) ? Vector2(60, Game::mWindowHeight / 2) : Vector2(Game::mWindowWidth - 60, Game::mWindowHeight / 2);
+	mHeading = (owner == Owner::PLAYER_ONE) ? Vector2(1, 0) : Vector2(-1, 0);
+	for (int i = 0; i < HITBOX_MAX; i++)
+	{
+		HitBox h = HitBox(mHeading * ((i - 2) * 25) + mPosition);
+		mHitBoxes[i] = h;
+	}
+
 }
 
 void Battleship::UpdateBattleship(float deltaTime)
@@ -17,9 +21,16 @@ void Battleship::UpdateBattleship(float deltaTime)
 	if (mRotation != 0) RotateBattleship();
 	WrapAroundPosition(mPosition);
 	PositionHitboxes();
+
+	if (mShell != nullptr) mShell->UpdateShell(deltaTime);
 }
 
-void Battleship::WrapAroundPosition(Vector2 &loc)
+void Battleship::RemoveShell()
+{
+
+}
+
+void Battleship::WrapAroundPosition(Vector2& loc)
 {
 	if (loc.x > Game::mWindowWidth) loc.x -= Game::mWindowWidth;
 	if (loc.x < 0) loc.x += Game::mWindowWidth;
@@ -27,18 +38,20 @@ void Battleship::WrapAroundPosition(Vector2 &loc)
 	if (loc.y < 0) loc.y += Game::mWindowHeight;
 }
 
-void Battleship::draw(SDL_Renderer* renderer)
+void Battleship::Draw(SDL_Renderer* renderer)
 {
 	SDL_Rect r;
 	r.w = 14;
 	r.h = 14;
 	for (size_t i = 0; i < HITBOX_MAX; i++)
 	{
-		WrapAroundPosition(mHitBoxes[i]);
-		r.x = mHitBoxes[i].x - 7;
-		r.y = mHitBoxes[i].y - 7;
+		WrapAroundPosition(mHitBoxes[i].mPosition);
+		r.x = mHitBoxes[i].mPosition.x - 7;
+		r.y = mHitBoxes[i].mPosition.y - 7;
 		SDL_RenderFillRect(renderer, &r);
 	}
+
+	if (mShell != nullptr) mShell->Draw(renderer);
 }
 
 void Battleship::RotateBattleship()
@@ -52,13 +65,23 @@ void Battleship::PositionHitboxes()
 {
 	for (int i = 0; i < HITBOX_MAX; i++)
 	{
-		mHitBoxes[i] = mHeading * ((i-2)*25) + mPosition;
+		mHitBoxes[i].mPosition = mHeading * ((i - 2) * 25) + mPosition;
 	}
+	
+}
+
+void Battleship::Fire(Vector2 direction)
+{
+	if (SDL_TICKS_PASSED(SDL_GetTicks64(), mLastFiredAt + 3000.0f) && mShell == nullptr)
+	{
+		mShell = new Shell(direction, mPosition, mEnemyHitBoxes);
+		mLastFiredAt = SDL_GetTicks64();
+	}	
 }
 
 void Battleship::ProcessKeyInput(const Uint8* state)
 {
-	if (mOwner == PLAYER_ONE) ProcessP1Keys(state);
+	if (mOwner == Owner::PLAYER_ONE) ProcessP1Keys(state);
 	else ProcessP2Keys(state);
 }
 
@@ -74,7 +97,7 @@ void Battleship::ProcessP1Keys(const Uint8* state)
 	}
 	if (!state[SDL_SCANCODE_W])
 	{
-		mSpeed -= mSpeed < 0.01f ? 0.0f : 0.5f;		
+		mSpeed -= mSpeed < 0.01f ? 0.0f : 0.5f;
 	}
 	if (state[SDL_SCANCODE_A])
 	{
@@ -86,17 +109,18 @@ void Battleship::ProcessP1Keys(const Uint8* state)
 	}
 	if (state[SDL_SCANCODE_Q])
 	{
-		FireLeft();
+		Fire(Vector2(mHeading.y, -1*mHeading.x));
+
 	}
 	if (state[SDL_SCANCODE_E])
 	{
-		FireRight();
+		Fire(Vector2(-1 * mHeading.y, mHeading.x));
 	}
 }
 
 void Battleship::ProcessP2Keys(const Uint8* state)
 {
-	
+
 	if (mSpeed > mMAX_SPEED) mSpeed = mMAX_SPEED;
 	if (mSpeed < 0) mSpeed = 0;
 	mRotation = 0;
@@ -107,7 +131,7 @@ void Battleship::ProcessP2Keys(const Uint8* state)
 	}
 	if (!state[SDL_SCANCODE_I])
 	{
-		mSpeed -= mSpeed < 0.01f ? 0.0f : 0.5f;		
+		mSpeed -= mSpeed < 0.01f ? 0.0f : 0.5f;
 	}
 	if (state[SDL_SCANCODE_J])
 	{
@@ -119,11 +143,11 @@ void Battleship::ProcessP2Keys(const Uint8* state)
 	}
 	if (state[SDL_SCANCODE_U])
 	{
-		FireLeft();
+		Fire(Vector2(mHeading.y, -1 * mHeading.x));
 	}
 	if (state[SDL_SCANCODE_O])
 	{
-		FireRight();
+		Fire(Vector2(-1 * mHeading.y, mHeading.x));
 	}
 }
 
