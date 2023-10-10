@@ -1,5 +1,5 @@
 # BattleshipsSDL
-##Installing SDL2 & SDL_TTF on Windows with Visual Studio
+## Installing SDL2 & SDL_TTF on Windows with Visual Studio
 
 1) download the VC.zip files from these URLs
 https://github.com/libsdl-org/SDL/releases/tag/release-2.28.4
@@ -11,7 +11,7 @@ https://github.com/libsdl-org/SDL_ttf/releases
 6) You now need to add the .dll files to your environment variables. Do this by going to the Windows settings page, and in the 'find a setting' search bar, search 'environment variables'. Click 'edit environment variables' and then the environment variables button.
 Edit the 'path' section to include the lib/x64 folders in the two library folders you unzipped earlier. 
 
-##Game Controls
+## Game Controls
 W/I - accelerate
 
 A/J - turn left
