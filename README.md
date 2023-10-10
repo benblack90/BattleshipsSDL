@@ -1,4 +1,8 @@
 # BattleshipsSDL
+It's battleships in real time! Kind of  ...
+A 2-player, single keyboard game, built in SDL2.
+## I just wanna play the build without installing stuff!
+Download the .exe file and the .ttf file in the build folder. As long as both files are in the same directory, the game should work when you run the .exe. 
 ## Installing SDL2 & SDL_TTF on Windows with Visual Studio
 
 1) download the VC.zip files from these URLs
