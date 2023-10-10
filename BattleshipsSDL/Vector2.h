@@ -28,7 +28,12 @@ public:
 
 	float Length() 
 	{
-		return sqrt(x * x + y * y);
+		return sqrtf(x * x + y * y);
+	}
+
+	float SquaredLength()
+	{
+		return x * x + y * y;
 	}
 
 	void Normalize()

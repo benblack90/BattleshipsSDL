@@ -4,12 +4,12 @@
 class HitBox
 {
 public:
-	HitBox();
+	HitBox() 
+		:mPosition {0,0}, mHitStatus {HitStatus::NOT_HIT}
+	{	}
 	HitBox(Vector2 position)
-		:mPosition {position}
-	{
-		mHitStatus = HitStatus::NOT_HIT;
-	}
+		:mPosition {position}, mHitStatus{ HitStatus::NOT_HIT }
+	{	}
 
 	enum class HitStatus
 	{

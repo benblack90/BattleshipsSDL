@@ -22,6 +22,7 @@ public:
 	void ProcessKeyInput(const Uint8* state);
 	void Draw(SDL_Renderer* renderer);
 	HitBox* GetHitboxes() { return mHitBoxes; }
+	void RemoveShell(Shell* shell);
 	inline void SetEnemyHitBoxes(HitBox* enemyHitBoxes) { mEnemyHitBoxes = enemyHitBoxes; }
 
 private:
@@ -32,7 +33,6 @@ private:
 	void PositionHitboxes();
 	void WrapAroundPosition(Vector2 &loc);
 	void Fire(Vector2 direction);
-	void RemoveShell();
 	
 
 	Vector2 mHeading;

@@ -25,9 +25,10 @@ void Battleship::UpdateBattleship(float deltaTime)
 	if (mShell != nullptr) mShell->UpdateShell(deltaTime);
 }
 
-void Battleship::RemoveShell()
+void Battleship::RemoveShell(Shell* shell)
 {
-
+	delete shell;
+	mShell = nullptr;
 }
 
 void Battleship::WrapAroundPosition(Vector2& loc)
@@ -48,7 +49,9 @@ void Battleship::Draw(SDL_Renderer* renderer)
 		WrapAroundPosition(mHitBoxes[i].mPosition);
 		r.x = mHitBoxes[i].mPosition.x - 7;
 		r.y = mHitBoxes[i].mPosition.y - 7;
+		if(mHitBoxes[i].mHitStatus == HitBox::HitStatus::HIT) SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
 		SDL_RenderFillRect(renderer, &r);
+		if (mHitBoxes[i].mHitStatus == HitBox::HitStatus::HIT) SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
 	}
 
 	if (mShell != nullptr) mShell->Draw(renderer);
@@ -74,7 +77,7 @@ void Battleship::Fire(Vector2 direction)
 {
 	if (SDL_TICKS_PASSED(SDL_GetTicks64(), mLastFiredAt + 3000.0f) && mShell == nullptr)
 	{
-		mShell = new Shell(direction, mPosition, mEnemyHitBoxes);
+		mShell = new Shell(this, direction, mPosition, mEnemyHitBoxes);
 		mLastFiredAt = SDL_GetTicks64();
 	}	
 }
@@ -109,7 +112,7 @@ void Battleship::ProcessP1Keys(const Uint8* state)
 	}
 	if (state[SDL_SCANCODE_Q])
 	{
-		Fire(Vector2(mHeading.y, -1*mHeading.x));
+		Fire(Vector2(mHeading.y, -1 * mHeading.x));
 
 	}
 	if (state[SDL_SCANCODE_E])
