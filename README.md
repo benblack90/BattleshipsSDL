@@ -2,9 +2,7 @@
 ## Installing SDL2 & SDL_TTF on Windows with Visual Studio
 
 1) download the VC.zip files from these URLs
-https://github.com/libsdl-org/SDL/releases/tag/release-2.28.4
-
-https://github.com/libsdl-org/SDL_ttf/releases
+https://github.com/libsdl-org/SDL/releases/tag/release-2.28.4 & https://github.com/libsdl-org/SDL_ttf/releases
 3) Unzip them and put them in some directory where you usually keep external libraries
 4) In visual studio, go to Project->Settings->VC++ Directories, and click on Include Directories. Add new entries for the include folders found in each of the libraries you just unzipped
 5) In Project->Settings->VC++ Directories again, add the lib/x64 folders to the Library Directories section
