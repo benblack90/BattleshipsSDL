@@ -28,18 +28,24 @@ bool Game::InitializeSDL()
 		SDL_Log("Error creating renderer: %s", SDL_GetError());
 		return false;
 	}
+
+	if (TTF_Init() != 0)
+	{
+		SDL_Log("SDL_TTF initialization error: %s", TTF_GetError());
+		return false;
+	}
 	return true;
 }
 
 void Game::ClaimVictory(Battleship* ship)
 {
-	mIsRunning = false; 
-	mWinner = ship;
 	mIsRunning = false;
+	mWinner = ship;
 }
 
 void Game::InitializeBattleships()
 {
+	mWinner = nullptr;
 	Battleship* ship1 = new Battleship(this, Owner::PLAYER_ONE);
 	Battleship* ship2 = new Battleship(this, Owner::PLAYER_TWO);
 	mShips[Owner::PLAYER_ONE] = ship1;
@@ -48,15 +54,21 @@ void Game::InitializeBattleships()
 
 void Game::RunLoop()
 {
-	while (mIsRunning)
-	{
-		ProcessInput();
-		Update();
-		GenerateOutput();
+	while (mPlayAgain) {
+		while (mIsRunning)
+		{
+			ProcessInput();
+			Update();
+			GenerateOutput();
+		}
+		if (mWinner != nullptr) {
+			EndGameLoop();
+		}
+		else mPlayAgain = false;
 	}
 }
 
-void Game::ProcessInput()
+void Game::CheckForQuitEvent()
 {
 	SDL_Event event;
 	while (SDL_PollEvent(&event))
@@ -68,9 +80,12 @@ void Game::ProcessInput()
 			break;
 		}
 	}
+}
 
+void Game::ProcessInput()
+{
 	const Uint8* state = SDL_GetKeyboardState(NULL);
-
+	CheckForQuitEvent();
 	if (state[SDL_SCANCODE_ESCAPE])
 	{
 		mIsRunning = false;
@@ -99,7 +114,7 @@ void Game::Update()
 		int enemy = Owner::PLAYER_MAX - i - 1;
 		mShips[i]->UpdateBattleship(deltaTime);
 		mShips[i]->SetEnemyHitBoxes(mShips[enemy]->GetHitboxes());
-	}	
+	}
 }
 
 void Game::GenerateOutput()
@@ -113,22 +128,74 @@ void Game::GenerateOutput()
 	{
 		bp->Draw(mRenderer);
 	}
-
 	SDL_RenderPresent(mRenderer);
+
 }
 
 void Game::EndGameLoop()
 {
-	bool quit = false;
-	while (!quit)
+
+	const Uint8* state = SDL_GetKeyboardState(NULL);
+	bool running = true;
+	const char* winner = (mWinner->mOwner == Owner::PLAYER_ONE) ? "Player 1 wins! Play again Y/N?" : "Player 2 wins! Play again Y/N?";
+	CleanUpBattleships();
+	TTF_Font* font = TTF_OpenFont("consola.ttf", 25);
+	SDL_Surface* surface = TTF_RenderText_Solid(font, winner, SDL_Color() = { 255, 255, 255 });
+	SDL_Texture* texture = SDL_CreateTextureFromSurface(mRenderer, surface);
+	DisplayGameEndText(texture, surface);
+
+	while (running)
 	{
-		//DOWNLOAD & INSTALL SDL_TTF
+		CheckForQuitEvent();
+		if (state[SDL_SCANCODE_N])
+		{
+			running = false;
+			mPlayAgain = false;
+			CleanUpFont(font, surface, texture);
+		}
+
+		if (state[SDL_SCANCODE_Y])
+		{
+			InitializeBattleships();
+			running = false;
+			mPlayAgain = true;
+			mIsRunning = true;
+			CleanUpFont(font, surface, texture);
+		}
 	}
+}
+
+void Game::DisplayGameEndText(SDL_Texture* texture, SDL_Surface* surface)
+{
+	SDL_SetRenderDrawColor(mRenderer, 0, 0, 0, 255);
+	SDL_RenderClear(mRenderer);
+	SDL_SetRenderDrawColor(mRenderer, 255, 255, 255, 255);
+	SDL_Rect textRec;
+	textRec.w = surface->w;
+	textRec.h = surface->h;
+	textRec.x = mWindowWidth / 2 - textRec.w / 2;
+	textRec.y = mWindowHeight / 2;
+	SDL_RenderCopy(mRenderer, texture, NULL, &textRec);
+	SDL_RenderPresent(mRenderer);
+}
+
+void Game::CleanUpFont(TTF_Font* font, SDL_Surface* surface, SDL_Texture* texture)
+{
+	SDL_DestroyTexture(texture);
+	SDL_FreeSurface(surface);
+	TTF_CloseFont(font);
+}
+
+void Game::CleanUpBattleships()
+{
+	for (Battleship* ship : mShips)
+		delete ship;
 }
 
 void Game::Shutdown()
 {
 	SDL_DestroyRenderer(mRenderer);
 	SDL_DestroyWindow(mWindow);
+	TTF_Quit();
 	SDL_Quit();
 }

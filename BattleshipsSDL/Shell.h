@@ -19,7 +19,7 @@ private:
 	void HitCheck();
 	void EdgeCheck();
 
-	float mSpeed = 200.0f;
+	float mSpeed = 400.0f;
 	bool mExploded = false;
 	class Battleship* mOrigin;
 	Vector2 mPosition;

@@ -15,6 +15,11 @@ Battleship::Battleship(Game* game, Owner::Owner owner)
 
 }
 
+Battleship::~Battleship()
+{
+	if (mShell != nullptr) delete mShell;
+}
+
 void Battleship::UpdateBattleship(float deltaTime)
 {
 	mPosition = mPosition + mHeading * mSpeed * deltaTime;
@@ -74,7 +79,7 @@ void Battleship::PositionHitboxes()
 
 void Battleship::Fire(Vector2 direction)
 {
-	if (SDL_TICKS_PASSED(SDL_GetTicks64(), mLastFiredAt + 3000.0f) && mShell == nullptr)
+	if (SDL_TICKS_PASSED(SDL_GetTicks64(), mLastFiredAt + 1000.0f) && mShell == nullptr)
 	{
 		mShell = new Shell(this, direction, mPosition, mEnemyHitBoxes);
 		mLastFiredAt = SDL_GetTicks64();

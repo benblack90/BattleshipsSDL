@@ -3,6 +3,7 @@
 #include "Game.h"
 #include "Vector2.h"
 
+
 int main()
 {
 	Game game;
@@ -10,7 +11,7 @@ int main()
 	if (success)
 	{
 		game.RunLoop();
-	}
+	}	
 	
 	game.Shutdown();
 	return 0;

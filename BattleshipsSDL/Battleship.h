@@ -18,6 +18,7 @@ public:
 	};
 
 	Battleship(class Game* game, Owner::Owner owner);
+	~Battleship();
 	void UpdateBattleship(float deltaTime);
 	void ProcessKeyInput(const Uint8* state);
 	void Draw(SDL_Renderer* renderer);
@@ -25,6 +26,8 @@ public:
 	void RemoveShell(Shell* shell);
 	inline void SetEnemyHitBoxes(HitBox* enemyHitBoxes) { mEnemyHitBoxes = enemyHitBoxes; }
 	void IncreaseScore();
+
+	Owner::Owner mOwner;
 
 private:
 
@@ -39,10 +42,10 @@ private:
 	Vector2 mHeading;
 	Vector2 mPosition;
 	float mSpeed;
-	const float mMAX_SPEED = 75.0f;
+	const float mMAX_SPEED = 100.0f;
 	float mRotation;
 	HitBox mHitBoxes[HITBOX_MAX];
-	Owner::Owner mOwner;
+	
 	HitBox* mEnemyHitBoxes;
 	Shell* mShell;
 	float mLastFiredAt;
