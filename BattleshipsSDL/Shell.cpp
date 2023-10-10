@@ -31,6 +31,7 @@ void Shell::HitCheck()
 	{
 		if ((mEnemyHitBoxes[i].mPosition - mPosition).SquaredLength() < 50)
 		{
+			if (mEnemyHitBoxes[i].mHitStatus != HitBox::HitStatus::HIT) mOrigin->IncreaseScore();
 			mEnemyHitBoxes[i].mHitStatus = HitBox::HitStatus::HIT;
 			mExploded = true;
 			mOrigin->RemoveShell(this);

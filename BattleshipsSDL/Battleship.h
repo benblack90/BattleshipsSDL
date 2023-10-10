@@ -17,13 +17,14 @@ public:
 		HITBOX_MAX
 	};
 
-	Battleship(Owner::Owner owner);
+	Battleship(class Game* game, Owner::Owner owner);
 	void UpdateBattleship(float deltaTime);
 	void ProcessKeyInput(const Uint8* state);
 	void Draw(SDL_Renderer* renderer);
 	HitBox* GetHitboxes() { return mHitBoxes; }
 	void RemoveShell(Shell* shell);
 	inline void SetEnemyHitBoxes(HitBox* enemyHitBoxes) { mEnemyHitBoxes = enemyHitBoxes; }
+	void IncreaseScore();
 
 private:
 
@@ -34,7 +35,7 @@ private:
 	void WrapAroundPosition(Vector2 &loc);
 	void Fire(Vector2 direction);
 	
-
+	class Game* mGame;
 	Vector2 mHeading;
 	Vector2 mPosition;
 	float mSpeed;
@@ -45,4 +46,6 @@ private:
 	HitBox* mEnemyHitBoxes;
 	Shell* mShell;
 	float mLastFiredAt;
+	int mScore = 0;
+	
 };

@@ -7,6 +7,7 @@ class Game
 public:
 	Game();
 	bool Initialize();
+	void ClaimVictory(class Battleship* ship);
 	void RunLoop();
 	void Shutdown();
 	bool InitializeSDL();
@@ -25,4 +26,5 @@ private:
 	bool mIsRunning;
 	Uint32 mTicks;
 	class Battleship* mShips[Owner::PLAYER_MAX];
+	class Battleship* mWinner;
 };

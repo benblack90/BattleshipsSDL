@@ -31,10 +31,17 @@ bool Game::InitializeSDL()
 	return true;
 }
 
+void Game::ClaimVictory(Battleship* ship)
+{
+	mIsRunning = false; 
+	mWinner = ship;
+	mIsRunning = false;
+}
+
 void Game::InitializeBattleships()
 {
-	Battleship* ship1 = new Battleship(Owner::PLAYER_ONE);
-	Battleship* ship2 = new Battleship(Owner::PLAYER_TWO);
+	Battleship* ship1 = new Battleship(this, Owner::PLAYER_ONE);
+	Battleship* ship2 = new Battleship(this, Owner::PLAYER_TWO);
 	mShips[Owner::PLAYER_ONE] = ship1;
 	mShips[Owner::PLAYER_TWO] = ship2;
 }
@@ -108,6 +115,15 @@ void Game::GenerateOutput()
 	}
 
 	SDL_RenderPresent(mRenderer);
+}
+
+void Game::EndGameLoop()
+{
+	bool quit = false;
+	while (!quit)
+	{
+		//DOWNLOAD & INSTALL SDL_TTF
+	}
 }
 
 void Game::Shutdown()

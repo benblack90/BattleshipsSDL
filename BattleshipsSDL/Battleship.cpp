@@ -2,8 +2,8 @@
 #include "Battleship.h"
 #include "Game.h"
 
-Battleship::Battleship(Owner::Owner owner)
-	:mOwner{ owner }, mRotation{ 0.0 }, mSpeed{ 0.0f }
+Battleship::Battleship(Game* game, Owner::Owner owner)
+	:mGame{ game }, mOwner{ owner }, mRotation{ 0.0 }, mSpeed{ 0.0f }
 {
 	mPosition = (owner == Owner::PLAYER_ONE) ? Vector2(60, Game::mWindowHeight / 2) : Vector2(Game::mWindowWidth - 60, Game::mWindowHeight / 2);
 	mHeading = (owner == Owner::PLAYER_ONE) ? Vector2(1, 0) : Vector2(-1, 0);
@@ -21,7 +21,6 @@ void Battleship::UpdateBattleship(float deltaTime)
 	if (mRotation != 0) RotateBattleship();
 	WrapAroundPosition(mPosition);
 	PositionHitboxes();
-
 	if (mShell != nullptr) mShell->UpdateShell(deltaTime);
 }
 
@@ -49,7 +48,7 @@ void Battleship::Draw(SDL_Renderer* renderer)
 		WrapAroundPosition(mHitBoxes[i].mPosition);
 		r.x = mHitBoxes[i].mPosition.x - 7;
 		r.y = mHitBoxes[i].mPosition.y - 7;
-		if(mHitBoxes[i].mHitStatus == HitBox::HitStatus::HIT) SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+		if (mHitBoxes[i].mHitStatus == HitBox::HitStatus::HIT) SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
 		SDL_RenderFillRect(renderer, &r);
 		if (mHitBoxes[i].mHitStatus == HitBox::HitStatus::HIT) SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
 	}
@@ -70,7 +69,7 @@ void Battleship::PositionHitboxes()
 	{
 		mHitBoxes[i].mPosition = mHeading * ((i - 2) * 25) + mPosition;
 	}
-	
+
 }
 
 void Battleship::Fire(Vector2 direction)
@@ -79,7 +78,7 @@ void Battleship::Fire(Vector2 direction)
 	{
 		mShell = new Shell(this, direction, mPosition, mEnemyHitBoxes);
 		mLastFiredAt = SDL_GetTicks64();
-	}	
+	}
 }
 
 void Battleship::ProcessKeyInput(const Uint8* state)
@@ -152,6 +151,12 @@ void Battleship::ProcessP2Keys(const Uint8* state)
 	{
 		Fire(Vector2(-1 * mHeading.y, mHeading.x));
 	}
+}
+
+void Battleship::IncreaseScore()
+{
+	mScore++;
+	if (mScore >= 4) mGame->ClaimVictory(this);
 }
 
 
